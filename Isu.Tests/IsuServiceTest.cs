@@ -8,6 +8,7 @@ namespace Isu.Tests
     public class Tests
     {
         private IIsuService _isuService;
+        private const short MaxNStudents = 3;
 
         [SetUp]
         public void Setup()
@@ -18,18 +19,18 @@ namespace Isu.Tests
         [Test]
         public void AddStudentToGroup_StudentHasGroupAndGroupContainsStudent()
         {
-            Group testGroup = _isuService.AddGroup(new GroupName("M3209"));
+            Group testGroup = _isuService.AddGroup(new GroupName("M3", CourseNumber.Second, 9), MaxNStudents);
             Student testStudent = _isuService.AddStudent(testGroup, "Name");
-            Assert.True(testGroup.Students.Contains(testStudent) && testStudent.Group == testGroup);
+            Assert.True(_isuService.FindGroup(testGroup.Name).Contains(testStudent));
         }
 
         [Test]
         public void ReachMaxStudentPerGroup_ThrowException()
         {
-            Group testGroup = _isuService.AddGroup(new GroupName("M3209"));
+            Group testGroup = _isuService.AddGroup(new GroupName("M3", CourseNumber.Second, 9), MaxNStudents);
             Assert.Catch<IsuException>(() =>
             {
-                for (int i = 0; i < 10000; i++)
+                for (int i = 0; i <= MaxNStudents; i++)
                 {
                     _isuService.AddStudent(testGroup, "Name");
                 }
@@ -41,20 +42,23 @@ namespace Isu.Tests
         {
             Assert.Catch<IsuException>(() =>
             {
-                Group testGroup = _isuService.AddGroup(new GroupName("M32O9")); // using letter "O" instead 0
+                new GroupName("P3", CourseNumber.Second, 09); // invalid prefix
+            });
+            Assert.Catch<IsuException>(() =>
+            {
+                new GroupName("M3", CourseNumber.Second, 1231); // invalid group number
             });
         }
 
         [Test]
         public void TransferStudentToAnotherGroup_GroupChanged()
         {
-            Group testGroup1 = _isuService.AddGroup(new GroupName("M3109"));
-            Group testGroup2 = _isuService.AddGroup(new GroupName("M3209"));
+            Group testGroup1 = _isuService.AddGroup(new GroupName("M3", CourseNumber.First, 9), MaxNStudents);
+            Group testGroup2 = _isuService.AddGroup(new GroupName("M3", CourseNumber.Second, 9), MaxNStudents);
             Student testStudent = _isuService.AddStudent(testGroup1, "Name");
-            _isuService.ChangeStudentGroup(ref testStudent, testGroup2);
-            Assert.True(!testGroup1.Students.Contains(testStudent) && 
-                        testGroup2.Students.Contains(testStudent)  && 
-                        testStudent.Group == testGroup2);
+            _isuService.ChangeStudentGroup(testStudent, testGroup2);
+            Assert.True(!_isuService.FindGroup(testGroup1.Name).Contains(testStudent) && 
+                        _isuService.FindGroup(testGroup2.Name).Contains(testStudent));
         }
     }
 }

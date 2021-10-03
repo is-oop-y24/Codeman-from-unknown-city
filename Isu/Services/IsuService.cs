@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Isu.Entities;
 using Isu.Tools;
@@ -8,76 +7,117 @@ namespace Isu.Services
 {
     public class IsuService : IIsuService
     {
-        private readonly List<Group>[] _groupsByCourse = new List<Group>[CourseNumber.Max + 1];
+        private readonly Dictionary<string, Group>[] _groupsByCourse = new Dictionary<string, Group>[(int)CourseNumber.Fourth + 1];
         private int _newStudentId = 1;
 
         public IsuService()
         {
             for (int i = 0; i < _groupsByCourse.Length; i++)
             {
-                _groupsByCourse[i] = new List<Group>();
+                _groupsByCourse[i] = new Dictionary<string, Group>();
             }
         }
 
-        public Group AddGroup(GroupName groupName)
+        public Group AddGroup(GroupName groupName, short maxNStudents)
         {
             if (FindGroup(groupName) != null)
             {
-                throw new IsuException($"Group {groupName.Val} already exist");
+                throw new IsuException($"Group {groupName} already exist");
             }
 
-            var group = new Group(groupName);
-            const int courseNumberIndex = 2;
-            var courseNumber = new CourseNumber(groupName.Val[courseNumberIndex]);
-            _groupsByCourse[courseNumber.Val].Add(group);
+            var group = new Group(groupName, maxNStudents);
+            _groupsByCourse[groupName.Course][groupName.ToString()] = group;
             return group;
         }
 
         public Student AddStudent(Group group, string studentName)
         {
-            var student = new Student(group, studentName, _newStudentId++);
-            group.Add(student);
+            var student = new Student(studentName, _newStudentId++);
+
+            try
+            {
+                _groupsByCourse[group.Name.Course][group.Name.ToString()] = FindGroup(group.Name).Add(student);
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new IsuException($"Group {group.Name} is not found in isu service");
+            }
+
             return student;
         }
 
-        public void ChangeStudentGroup(ref Student student, Group newGroup)
+        public void ChangeStudentGroup(Student student, Group newGroup)
         {
-            student.Group.Remove(student);
-            student.Group = newGroup;
-            newGroup.Add(student);
+            Group oldGroup = FindGroup(student.Id) ?? throw new IsuException($"Student {student.Name} is not in any group");
+            try
+            {
+                _groupsByCourse[oldGroup.Name.Course][oldGroup.Name.ToString()] = oldGroup.Remove(student);
+                student = new Student(student);
+                _groupsByCourse[newGroup.Name.Course][newGroup.Name.ToString()] = FindGroup(newGroup.Name).Add(student);
+            }
+            catch (KeyNotFoundException e)
+            {
+                throw new IsuException(e.Message);
+            }
         }
 
         public Group FindGroup(GroupName groupName)
         {
-            for (ushort i = 0; i <= CourseNumber.Max; i++)
+            try
             {
-                List<Group> groups = _groupsByCourse[i];
-                Group match = groups.Find(group => group.Name.Val == groupName.Val);
-                if (match != null)
+                return _groupsByCourse[groupName.Course][groupName.ToString()];
+            }
+            catch (KeyNotFoundException)
+            {
+                return null;
+            }
+        }
+
+        public List<Group> FindGroups(CourseNumber courseNumber)
+        {
+            var groups = new List<Group>();
+
+            foreach ((string _, Group group) in _groupsByCourse[(int)courseNumber])
+            {
+                groups.Add(group);
+            }
+
+            return groups;
+        }
+
+        public Student FindStudent(string studentName)
+        {
+            for (int i = 1; i < _groupsByCourse.Length; i++)
+            {
+                foreach ((string _, Group group) in _groupsByCourse[i])
                 {
-                    return match;
+                    Student match = group.Find(studentName);
+                    if (match != null)
+                        return match;
                 }
             }
 
             return null;
         }
 
-        public List<Group> FindGroups(CourseNumber courseNumber) => _groupsByCourse[courseNumber.Val];
-
-        public Student? FindStudent(string studentName) => FindStudent(student => student.Name == studentName);
-
-        public Student GetStudent(int id)
+        public Student FindStudent(int id)
         {
-            Student? match = FindStudent(student => student.Id == id);
-            if (match == null)
+            for (int i = 1; i < _groupsByCourse.Length; i++)
             {
-                throw new IsuException($"Cannot find student with id {id}");
+                foreach ((string _, Group group) in _groupsByCourse[i])
+                {
+                    Student match = group.Find(id);
+                    if (match != null)
+                        return match;
+                }
             }
 
-            return (Student)match;
+            return null;
         }
 
-        public List<Student> FindStudents(GroupName groupName) => FindGroup(groupName).Students;
+        public Student GetStudent(int id) => FindStudent(id) ?? throw new IsuException($"Cannot find student with id {id}");
+
+        public List<Student> FindStudents(GroupName groupName) => FindGroup(groupName)?.Students ?? new List<Student>();
 
         public List<Student> FindStudents(CourseNumber courseNumber)
         {
@@ -86,17 +126,15 @@ namespace Isu.Services
             return students;
         }
 
-        private Student? FindStudent(Predicate<Student> predicate)
+        private Group FindGroup(int studentId)
         {
-            for (ushort i = 0; i <= CourseNumber.Max; i++)
+            foreach (Dictionary<string, Group> groups in _groupsByCourse)
             {
-                List<Group> groups = _groupsByCourse[i];
-                foreach (Group group in groups)
+                foreach ((string _, Group group) in groups)
                 {
-                    Student? match = group.Find(predicate);
-                    if (match != null)
+                    if (group.Contains(studentId))
                     {
-                        return match;
+                        return group;
                     }
                 }
             }

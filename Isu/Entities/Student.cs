@@ -2,19 +2,20 @@
 
 namespace Isu.Entities
 {
-    public struct Student
+    public class Student
     {
-        public readonly string Name;
-        public readonly int Id;
-        public Group Group;
-
-        public Student(Group group, string name, int id)
+        public Student(string name, int id)
         {
-            Group = group;
             Name = Validate(name);
             Id = id;
         }
 
+        public Student(Student other)
+            : this(other.Name, other.Id)
+        { }
+
+        public string Name { get; }
+        public int Id { get; }
         public static string Validate(string name)
         {
             if (string.IsNullOrEmpty(name))
