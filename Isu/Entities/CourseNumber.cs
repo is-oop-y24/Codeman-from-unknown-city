@@ -1,31 +1,25 @@
-﻿using Isu.Tools;
-
-namespace Isu.Entities
+﻿namespace Isu.Entities
 {
-    public readonly struct CourseNumber
+    public enum CourseNumber
     {
-        public const ushort Max = 9;
+        /// <summary>
+        /// Represents the first course number.
+        /// </summary>
+        First = 1,
 
-        public readonly ushort Val;
+        /// <summary>
+        /// Represents the second course number.
+        /// </summary>
+        Second,
 
-        public CourseNumber(ushort val)
-        {
-            if (val > Max)
-            {
-                throw new IsuException($"Course number must not be bigger than {Max}");
-            }
+        /// <summary>
+        /// Represents the third course number.
+        /// </summary>
+        Third,
 
-            Val = val;
-        }
-
-        public CourseNumber(char val)
-        {
-            if (!(val >= '0' && val <= '9'))
-            {
-                throw new IsuException("Course number must be a number");
-            }
-
-            Val = (ushort)(val - '0');
-        }
+        /// <summary>
+        /// Represents the fourth course number.
+        /// </summary>
+        Fourth,
     }
 }
