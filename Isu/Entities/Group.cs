@@ -16,40 +16,16 @@ namespace Isu.Entities
             _nStudents = 0;
         }
 
-        private Group(Group other, Student student, ActionWithStudent action)
-            : this(other.Name, other._maxNStudents)
+        private Group(Dictionary<int, Student> students, short maxNStudents, short nStudents, GroupName name)
+            : this(name, maxNStudents)
         {
-            _nStudents = other._nStudents;
-
-            foreach ((int id, Student otherStudent) in other._students)
+            if (nStudents > maxNStudents)
             {
-                _students[id] = otherStudent;
+                throw new IsuException("Reached max number of students per group");
             }
 
-            switch (action)
-            {
-                case ActionWithStudent.Delete:
-                    _students.Remove(student.Id);
-                    _nStudents--;
-                    break;
-
-                case ActionWithStudent.Add:
-                    _students[student.Id] = student;
-                    _nStudents++;
-
-                    if (_nStudents > _maxNStudents)
-                    {
-                        throw new IsuException("Reached max number of students per group");
-                    }
-
-                    break;
-            }
-        }
-
-        private enum ActionWithStudent
-        {
-            Delete,
-            Add,
+            _students = students;
+            _nStudents = nStudents;
         }
 
         public GroupName Name { get; }
@@ -68,9 +44,9 @@ namespace Isu.Entities
             }
         }
 
-        public Group Add(Student student) => new Group(this, student, ActionWithStudent.Add);
+        public Group Add(Student student) => new Builder(this).Add(student).Build();
 
-        public Group Remove(Student student) => new Group(this, student, ActionWithStudent.Delete);
+        public Group Remove(Student student) => new Builder(this).Remove(student).Build();
 
         public bool Contains(int studentId) => _students.ContainsKey(studentId);
         public bool Contains(Student student) => Contains(student.Id);
@@ -86,6 +62,42 @@ namespace Isu.Entities
             }
 
             return null;
+        }
+
+        private class Builder
+        {
+            private readonly Dictionary<int, Student> _students = new Dictionary<int, Student>();
+            private readonly short _maxNStudents;
+            private readonly GroupName _groupName;
+            private short _nStudents;
+
+            public Builder(Group group)
+            {
+                foreach ((int id, Student student) in group._students)
+                {
+                    _students[id] = student;
+                }
+
+                _maxNStudents = group._maxNStudents;
+                _nStudents = group._nStudents;
+                _groupName = group.Name;
+            }
+
+            public Builder Remove(Student student)
+            {
+                _students.Remove(student.Id);
+                _nStudents--;
+                return this;
+            }
+
+            public Builder Add(Student student)
+            {
+                _students[student.Id] = student;
+                _nStudents++;
+                return this;
+            }
+
+            public Group Build() => new Group(_students, _maxNStudents, _nStudents, _groupName);
         }
     }
 }
