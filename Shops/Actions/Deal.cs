@@ -1,10 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Shops.Entities;
+using Shops.Interfaces;
 
 namespace Shops.Actions
 {
-    public class Deal
+    public static class Deal
     {
-        public static void Resolve(Shop shop, ref Customer customer, List<(string, uint)> productsNamesAndCounts) => shop.SellProducts(productsNamesAndCounts, ref customer.Money);
+        public static (IShop, Customer) Resolve(IShop shop, Customer customer, List<(Guid, uint)> order)
+        {
+            float money = customer.Money;
+            return (shop.SellProducts(order, ref money), new Customer(customer.Name, money));
+        }
     }
 }

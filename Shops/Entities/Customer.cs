@@ -1,14 +1,14 @@
 ﻿namespace Shops.Entities
 {
-    public struct Customer
+    public class Customer
     {
-        public readonly string Name;
-        public uint Money;
-
-        public Customer(string name, uint money)
+        public Customer(string name, float money)
         {
             Name = name;
             Money = money;
         }
+
+        public string Name { get; }
+        public float Money { get; }
     }
 }

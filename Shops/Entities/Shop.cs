@@ -1,96 +1,137 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Shops.Exceptions;
+using Shops.Interfaces;
+using Shops.Tools;
 
 namespace Shops.Entities
 {
-    public class Shop
+    public class Shop : IShop
     {
-        private readonly List<Product> _products;
+        private readonly Dictionary<Guid, ProductInfo> _productsInfo;
+        private readonly IProductsNames _productsNames;
 
-        public Shop(string name, string address)
+        public Shop(IProductsNames productsNames, string name, string address)
         {
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(address))
+            {
+                throw new ShopsException("Shop name and address shouldn't be empty or null");
+            }
+
             Name = name;
             Address = address;
-            Id = Guid.NewGuid();
-            _products = new List<Product>();
+            _productsInfo = new Dictionary<Guid, ProductInfo>();
+            _productsNames = productsNames ??
+                                       throw new ShopsException("Products names repository shouldn't be null");
+        }
+
+        private Shop(Shop other)
+            : this(other._productsNames, other.Name, other.Address)
+        {
+            foreach ((Guid id, ProductInfo productInfo) in other._productsInfo)
+            {
+                _productsInfo[id] = productInfo;
+            }
+        }
+
+        private Shop(Shop other, List<(Guid, uint)> updatedProductsCounts)
+            : this(other)
+        {
+            foreach ((Guid id, uint count) in updatedProductsCounts)
+            {
+                CheckExistence(id);
+                _productsInfo[id] = new ProductInfo(_productsInfo[id].Cost, count);
+            }
+        }
+
+        private Shop(Shop other, List<(Guid, float)> updatedProductsCosts)
+            : this(other)
+        {
+            foreach ((Guid id, float cost) in updatedProductsCosts)
+            {
+                _productsNames.CheckExistence(id);
+                _productsInfo[id] = _productsInfo.ContainsKey(id)
+                    ? new ProductInfo(cost, _productsInfo[id].Count)
+                    : new ProductInfo(cost);
+            }
         }
 
         public string Name { get; }
         public string Address { get; }
-        public Guid Id { get; }
 
-        public void AddProductsInAssortment(List<(string, uint)> productNamesAndCosts)
+        public IShop AddProductsInAssortment(List<(Guid, float)> productsCost) => new Shop(this, productsCost);
+
+        public IShop TakeDelivery(List<(Guid, uint)> productsCounts) => new Shop(this, productsCounts);
+
+        public IShop SellProducts(List<(Guid, uint)> order, ref float money)
+            => new Shop(this, HandleOrder(order, ref money));
+
+        public IShop ChangeCost(Guid id, float cost) => new Shop(this, new List<(Guid, float)> { (id, cost) });
+
+        public bool Contains(Guid id) => _productsInfo.ContainsKey(id);
+
+        public float GetCost(Guid id) => _productsInfo[id].Cost;
+        public uint GetCount(Guid id) => _productsInfo[id].Count;
+
+        private List<(Guid, uint)> HandleOrder(List<(Guid, uint)> order, ref float money)
         {
-            foreach ((string name, uint cost) in productNamesAndCosts)
+            float moneyBefore = money;
+            string errorMsg;
+            var soldProducts = new List<(Guid, uint)>();
+
+            foreach ((Guid id, uint count) in order)
             {
-                if (_products.Exists(product => product.Name == name))
+                CheckExistence(id);
+                uint nProductsBefore = _productsInfo[id].Count;
+
+                if (nProductsBefore < count)
                 {
-                    throw new ShopException($"Product '{name}' already exists");
+                    errorMsg = $"Insufficient amount of products ({_productsNames.GetName(id)}";
+                    goto Cleanup;
                 }
 
-                _products.Add(new Product(name, cost));
-            }
-        }
+                money -= count * _productsInfo[id].Cost;
 
-        public void ChangeCost(string productName, uint newCost) => GetProduct(productName).Cost = newCost;
-
-        public void TakeProductsDelivery(List<(string, uint)> namesAndCounts)
-        {
-            foreach ((string name, uint count) in namesAndCounts)
-            {
-                GetProduct(name).Count += count;
-            }
-        }
-
-        public void SellProducts(List<(string, uint)> namesAndCounts, ref uint money)
-        {
-            var purchasedProducts = new List<(Product, uint)>();
-            uint costOfAll = 0;
-
-            foreach ((string name, uint count) in namesAndCounts)
-            {
-                Product product = GetProduct(name);
-
-                if (product.Count < count)
+                if (money < 0)
                 {
-                    throw new PurchaseException("Insufficient amount");
+                    errorMsg = "Insufficient funds";
+                    goto Cleanup;
                 }
 
-                costOfAll += product.Cost * count;
-                purchasedProducts.Add((product, count));
+                soldProducts.Add((id, nProductsBefore - count));
             }
 
-            if (money < costOfAll)
-            {
-                throw new PurchaseException("Insufficient funds");
-            }
+            return soldProducts;
 
-            foreach ((Product productInfo, uint count) in purchasedProducts)
-            {
-                productInfo.Count -= count;
-            }
-
-            money -= costOfAll;
+            Cleanup:
+            money = moneyBefore;
+            throw new ShopsException(errorMsg);
         }
 
-        public uint GetProductCost(string name) => GetProduct(name).Cost;
-        public uint GetProductCount(string name) => GetProduct(name).Count;
-
-        private Product GetProduct(string name) => _products.Find(product => product.Name == name) ?? throw new ShopException($"Product {name} doesn't exists");
-
-        private class Product
+        private void CheckExistence(Guid id)
         {
-            public Product(string name, uint cost)
+            _productsNames.CheckExistence(id);
+            if (!_productsInfo.ContainsKey(id))
             {
-                Name = name;
+                throw new ShopsException(
+                    $"Product '{_productsNames.GetName(id)}' isn't in '{Name}' assortment");
+            }
+        }
+
+        private class ProductInfo
+        {
+            public ProductInfo(float cost, uint count = 0)
+            {
+                if (cost < 1)
+                {
+                    throw new ShopsException("Product cost should be bigger than 1");
+                }
+
                 Cost = cost;
-                Count = 0;
+                Count = count;
             }
 
-            public string Name { get; }
-            public uint Cost { get; set; }
-            public uint Count { get; set; }
+            public float Cost { get; }
+            public uint Count { get; }
         }
     }
 }
