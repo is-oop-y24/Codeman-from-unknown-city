@@ -45,9 +45,12 @@ namespace Shops.Tests
         [Test]
         public void AddProduct_ProductAdded()
         {
+            Guid breadId = _productsNames.Register("bread");
+            const float breadCost = 20;
             try
             {
-                Assert.True(_testShop.GetCost(_testProductId) == TestProductCost);
+                _testShop = _testShop.AddProductsInAssortment(new List<(Guid, float)> { (breadId, breadCost) });
+                Assert.True(_testShop.GetCost(breadId) == breadCost);
             } catch (ShopsException)
             {
                 Assert.Fail("Product wasn't added");
