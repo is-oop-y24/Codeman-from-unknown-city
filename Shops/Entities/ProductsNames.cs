@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Shops.Interfaces;
-using Shops.Tools;
 
 namespace Shops.Entities
 {
@@ -24,12 +23,6 @@ namespace Shops.Entities
 
         public string GetName(Guid id) => _productsNames[id];
 
-        public void CheckExistence(Guid id)
-        {
-            if (!_productsNames.ContainsKey(id))
-            {
-                throw new ShopsException($"Product with id {id} is not exists");
-            }
-        }
+        public bool CheckExistence(Guid id) => _productsNames.ContainsKey(id);
     }
 }

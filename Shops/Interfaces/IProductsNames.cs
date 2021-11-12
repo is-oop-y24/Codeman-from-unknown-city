@@ -6,6 +6,6 @@ namespace Shops.Interfaces
     {
         Guid Register(string name);
         string GetName(Guid id);
-        void CheckExistence(Guid id);
+        bool CheckExistence(Guid id);
     }
 }

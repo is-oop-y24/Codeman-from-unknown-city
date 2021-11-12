@@ -48,7 +48,11 @@ namespace Shops.Entities
         {
             foreach ((Guid id, float cost) in updatedProductsCosts)
             {
-                _productsNames.CheckExistence(id);
+                if (!_productsNames.CheckExistence(id))
+                {
+                    throw new ShopsException($"Product with id {id} is not exists");
+                }
+
                 _productsInfo[id] = _productsInfo.ContainsKey(id)
                     ? new ProductInfo(cost, _productsInfo[id].Count)
                     : new ProductInfo(cost);
@@ -60,7 +64,7 @@ namespace Shops.Entities
 
         public IShop AddProductsInAssortment(List<(Guid, float)> productsCost) => new Shop(this, productsCost);
 
-        public IShop TakeDelivery(List<(Guid, uint)> productsCounts) => new Shop(this, productsCounts);
+        public IShop TakeDelivery(List<(Guid, uint)> delivery) => new Shop(this, delivery);
 
         public IShop SellProducts(List<(Guid, uint)> order, ref float money)
             => new Shop(this, HandleOrder(order, ref money));
@@ -109,7 +113,11 @@ namespace Shops.Entities
 
         private void CheckExistence(Guid id)
         {
-            _productsNames.CheckExistence(id);
+            if (!_productsNames.CheckExistence(id))
+            {
+                throw new ShopsException($"Product with id {id} is not exists");
+            }
+
             if (!_productsInfo.ContainsKey(id))
             {
                 throw new ShopsException(
