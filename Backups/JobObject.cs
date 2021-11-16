@@ -17,7 +17,7 @@ namespace Backups
 
         public bool Add(string path)
         {
-            bool pathValid = !_fsIsVirtual || File.Exists(path);
+            bool pathValid = _fsIsVirtual || File.Exists(path);
             if (pathValid)
                 _filesPaths.Add(path);
             return pathValid;

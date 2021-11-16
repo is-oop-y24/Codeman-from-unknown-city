@@ -8,7 +8,7 @@ namespace Backups.Tests
     public class BackupTest
     {
         private const string SplitStorageBackupJobName = ".test_backup_split";
-        private const string TestFilesDirPath = "/home/sergei/RiderProjects/Codeman-from-unknown-city/Backups";
+        private const string TestFilesDirPath = "some_test_dir_path";
         
         private IBackupJob _splitStorageBackupJob;
         
@@ -28,12 +28,12 @@ namespace Backups.Tests
             const int nStorages = 3;
             var paths = new List<string>
             {
-                Path.Combine(TestFilesDirPath, "Program.cs"),
-                Path.Combine(TestFilesDirPath, "Storage.cs")
+                "some_path",
+                "some_another_path"
             };
             paths.ForEach(path => Assert.True(_splitStorageBackupJob.Add(path)));
             _splitStorageBackupJob.Run();
-            _splitStorageBackupJob.Remove(Path.Combine(TestFilesDirPath, "Program.cs"));
+            _splitStorageBackupJob.Remove("some_path");
             _splitStorageBackupJob.Run();
             var backup = _splitStorageBackupJob.Backup.ToList();
             Assert.True(backup.Count() == nRestorePoints);
