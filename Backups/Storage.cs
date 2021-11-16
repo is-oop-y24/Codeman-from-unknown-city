@@ -5,11 +5,11 @@ namespace Backups
 {
     public class Storage : IStorage
     {
-        public Storage(string pathToCopy)
+        public Storage(string pathToCopy, bool fsIsVirtual)
         {
             if (string.IsNullOrEmpty(pathToCopy))
                 throw new ArgumentException("Path to copy should not be null or empty");
-            if (!File.Exists(pathToCopy))
+            if (!fsIsVirtual && !File.Exists(pathToCopy))
                 throw new ArgumentException($@"{pathToCopy} doesn't exists");
             CopyInfo = pathToCopy;
         }

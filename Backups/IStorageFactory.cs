@@ -2,6 +2,6 @@ namespace Backups
 {
     public interface IStorageFactory
     {
-        public IStorage Create(string path);
+        public IStorage Create(string path, bool fsIsVirtual);
     }
 }

@@ -7,8 +7,8 @@ namespace Backups
 {
     public class RepositoryWithSplitStoragesAlgorithm : Repository
     {
-        public RepositoryWithSplitStoragesAlgorithm(string path, IStorageFactory storageFactory)
-            : base(path, storageFactory)
+        public RepositoryWithSplitStoragesAlgorithm(string path, IStorageFactory storageFactory, bool fsIsVirtual = false)
+            : base(path, storageFactory, fsIsVirtual)
         { }
 
         public override IEnumerable<IStorage> Save(IJobObject jobObjects)
@@ -19,9 +19,13 @@ namespace Backups
             {
                 string srcName = Path.GetFileName(srcPath);
                 string copyPath = BuildCopyPath(srcName);
-                ZipArchive archive = ZipFile.Open(copyPath, ZipArchiveMode.Create);
-                archive.CreateEntryFromFile(srcPath, srcName);
-                storages.Add(StorageFactory.Create(copyPath));
+                if (!FsIsVirtual)
+                {
+                    ZipArchive archive = ZipFile.Open(copyPath, ZipArchiveMode.Create);
+                    archive.CreateEntryFromFile(srcPath, srcName);
+                }
+
+                storages.Add(StorageFactory.Create(copyPath, FsIsVirtual));
             }
 
             return storages;

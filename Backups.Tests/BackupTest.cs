@@ -16,8 +16,8 @@ namespace Backups.Tests
         public void Setup()
         {
             _splitStorageBackupJob = new BackupJob(
-                new JobObject(),
-                new RepositoryWithSplitStoragesAlgorithm(SplitStorageBackupJobName, new StorageFactory())
+                new JobObject(true),
+                new RepositoryWithSplitStoragesAlgorithm(SplitStorageBackupJobName, new StorageFactory(), true)
             );
         }
 
@@ -38,12 +38,6 @@ namespace Backups.Tests
             var backup = _splitStorageBackupJob.Backup.ToList();
             Assert.True(backup.Count() == nRestorePoints);
             Assert.True(nStorages == backup.Sum(restorePoint => restorePoint.Storages.Count()));
-        }
-        
-        [TearDown]
-        public void Cleanup()
-        {
-            Directory.Delete(SplitStorageBackupJobName, true);
         }
     }
 }
