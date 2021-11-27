@@ -20,17 +20,27 @@ namespace IsuExtra
 
         public void Remove(Lesson lesson) => _lessons.Remove(lesson);
 
-        private bool LessonOverlapsWithOthers(Lesson newLesson)
-        {
-            List<Lesson> matches = _lessons.FindAll(lesson =>
-            {
-                if (lesson.Date.DayOfWeek != newLesson.Date.DayOfWeek || lesson.Auditory != newLesson.Auditory)
-                    return false;
-                double timeBetweenLessons = (Math.Abs(lesson.Date.Minute - newLesson.Date.Minute) * 0.01) +
-                                            Math.Abs(lesson.Date.Hour - newLesson.Date.Hour);
-                return timeBetweenLessons < 1.30;
-            });
-            return matches.Count > 0;
-        }
+        private bool LessonOverlapsWithOthers(Lesson newLesson) =>
+            _lessons
+                .FindAll(lesson =>
+                {
+                    if (lesson.Date.DayOfWeek != newLesson.Date.DayOfWeek || lesson.Auditory != newLesson.Auditory)
+                        return false;
+
+                    if (newLesson.Date.Hour > lesson.Date.Hour)
+                    {
+                        DateTime nextLessonMinStartTime = lesson.Date.AddHours(1).AddMinutes(31);
+                        return nextLessonMinStartTime.CompareTo(newLesson.Date) > 0;
+                    }
+
+                    if (newLesson.Date.Hour < lesson.Date.Hour)
+                    {
+                        DateTime prevLessonMaxStartTime = lesson.Date.AddHours(-1).AddMinutes(-31);
+                        return prevLessonMaxStartTime.CompareTo(newLesson.Date) < 0;
+                    }
+
+                    return true;
+                })
+                .Count > 0;
     }
 }
