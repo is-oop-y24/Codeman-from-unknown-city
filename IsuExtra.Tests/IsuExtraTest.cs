@@ -44,7 +44,7 @@ namespace IsuExtra.Tests
         {
             OgnpGroup ognp = _isuService.AddOgnp(new GroupName(Faculty.Ctu, CourseNumber.First, 03), MaxNStudents);
             ognp.Add(new Lesson("Tech", "349A", DateTime.Now));
-            Assert.Catch<IsuException>(()=> ognp.Add(new Lesson("Tech", "349A", DateTime.Now.AddHours(1).AddMinutes(20))));
+            Assert.Catch<IsuException>(()=> ognp.Add(new Lesson("Tech", "349A", DateTime.Now.AddHours(1))));
         }
     }
 }
