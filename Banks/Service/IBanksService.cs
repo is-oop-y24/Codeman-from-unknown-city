@@ -5,9 +5,9 @@ namespace Banks.Service
 {
     public interface IBanksService
     {
-        public IBank FindBank(string name);
+        IBank FindBank(string name);
 
-        public IBank AddBank(
+        IBank AddBank(
             string name,
             Dictionary<AccountType, object> interestedRates,
             Dictionary<AccountType, double> commissions,

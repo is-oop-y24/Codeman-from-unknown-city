@@ -7,13 +7,13 @@ namespace Banks
 {
     public interface IBank
     {
-        public string Name { get; }
-        public Dictionary<AccountType, object> InterestedRates { get; }
-        public Dictionary<AccountType, double> Commissions { get; }
-        public Client AddClient(ClientInfo clientInfo);
-        public void AddAccount(Client client, Account account);
-        public Client FindClientByPhoneNumber(string num);
-        public void GetCommission(object sender, EventArgs eventArgs);
-        public void ChargeInterest(object sender, EventArgs eventArgs);
+        string Name { get; }
+        Dictionary<AccountType, object> InterestedRates { get; }
+        Dictionary<AccountType, double> Commissions { get; }
+        Client AddClient(ClientInfo clientInfo);
+        void AddAccount(Client client, Account account);
+        Client FindClientByPhoneNumber(string num);
+        void GetCommission(object sender, EventArgs eventArgs);
+        void ChargeInterest(object sender, EventArgs eventArgs);
     }
 }
