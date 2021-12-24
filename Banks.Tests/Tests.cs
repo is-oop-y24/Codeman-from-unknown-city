@@ -69,7 +69,7 @@ namespace Banks.Tests
         public void AddClient_ClientAdded()
         {
             AddClient();
-            Assert.True(_bank.FindClientByPhoneNumber(ClientPhoneNumber) != null);
+            Assert.AreNotEqual(_bank.FindClientByPhoneNumber(ClientPhoneNumber), null);
         }
 
         private Account AddAccount(Client client)
@@ -84,7 +84,7 @@ namespace Banks.Tests
         {
             Client client = AddClient();
             AddAccount(client);
-            Assert.True(client.Accounts.Find(account => account.Type == AccountType.Debit) != null);
+            Assert.AreNotEqual(client.Accounts.Find(account => account.Type == AccountType.Debit), null);
         }
 
         [Test]
@@ -119,7 +119,7 @@ namespace Banks.Tests
             new TopUp(account, sum).Commit(out string _);
             var waybackMachine = WaybackMachine.Instance;
             waybackMachine.RewindTimeForwardOnDay();
-            Assert.True(account.Balance == sum);
+            Assert.AreEqual(account.Balance, sum);
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace Banks.Tests
             var waybackMachine = WaybackMachine.Instance;
             waybackMachine.RewindTimeForwardOnMount();
             double expectedBalance = sum + sum / 100 * (3d / 365d) * 29;
-            Assert.True(account.Balance == expectedBalance);
+            Assert.AreEqual(account.Balance, expectedBalance);
         }
     }
 }
