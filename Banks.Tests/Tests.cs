@@ -18,21 +18,21 @@ namespace Banks.Tests
         private IBanksService _banksService;
         private IBank _bank;
 
-        private static Dictionary<Account.AccountType, object> InstallInterestedRates()
+        private static Dictionary<AccountType, object> InstallInterestedRates()
         {
             var depositInterestedRate = new InterestedRate(3);
             depositInterestedRate.Add(50000, 3.5, out string _);
             depositInterestedRate.Add(100000, 4, out string _);
-            return new Dictionary<Account.AccountType, object>
+            return new Dictionary<AccountType, object>
             {
-                [Account.AccountType.Debit] = 4,
-                [Account.AccountType.Deposit] = depositInterestedRate
+                [AccountType.Debit] = 4,
+                [AccountType.Deposit] = depositInterestedRate
             };
         }
 
-        private static Dictionary<Account.AccountType, double> InstallCommissions() => new Dictionary<Account.AccountType, double>
+        private static Dictionary<AccountType, double> InstallCommissions() => new Dictionary<AccountType, double>
             {
-                [Account.AccountType.Credit] = 1000
+                [AccountType.Credit] = 1000
             };
         
         [SetUp]
@@ -84,7 +84,7 @@ namespace Banks.Tests
         {
             Client client = AddClient();
             AddAccount(client);
-            Assert.True(client.Accounts.Find(account => account.Type == Account.AccountType.Debit) != null);
+            Assert.True(client.Accounts.Find(account => account.Type == AccountType.Debit) != null);
         }
 
         [Test]

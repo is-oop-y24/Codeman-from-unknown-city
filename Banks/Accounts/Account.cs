@@ -13,24 +13,6 @@ namespace Banks.Accounts
             IsDoubtful = isDoubtful;
         }
 
-        public enum AccountType
-        {
-            /// <summary>
-            /// Debit account
-            /// </summary>
-            Debit = 1,
-
-            /// <summary>
-            /// Credit account
-            /// </summary>
-            Credit,
-
-            /// <summary>
-            /// Deposit account
-            /// </summary>
-            Deposit,
-        }
-
         public AccountType Type { get; protected set; }
         public bool IsDoubtful { get; set; }
         public double AllowedSendSum { get; set; }

@@ -26,11 +26,11 @@ namespace Banks.UI
                 menu.Render();
         }
 
-        private static Dictionary<Account.AccountType, object> GetInterestedRates()
+        private static Dictionary<AccountType, object> GetInterestedRates()
         {
-            var interestedRates = new Dictionary<Account.AccountType, object>();
+            var interestedRates = new Dictionary<AccountType, object>();
             Console.Write("Enter interested rate for debit account: ");
-            interestedRates.Add(Account.AccountType.Debit, Convert.ToDouble(Console.ReadLine()));
+            interestedRates.Add(AccountType.Debit, Convert.ToDouble(Console.ReadLine()));
             var debitInterestedRates = new List<(double, double)>();
             Console.WriteLine("Enter interested rate for deposit account:");
             do
@@ -43,17 +43,17 @@ namespace Banks.UI
                 Console.Write("Do you want to continue? [Y/n] ");
             }
             while (Console.ReadLine() != "n");
-            interestedRates.Add(Account.AccountType.Deposit, debitInterestedRates);
+            interestedRates.Add(AccountType.Deposit, debitInterestedRates);
             return interestedRates;
         }
 
-        private static Dictionary<Account.AccountType, double> GetCommissions()
+        private static Dictionary<AccountType, double> GetCommissions()
         {
-            var commissions = new Dictionary<Account.AccountType, double>();
+            var commissions = new Dictionary<AccountType, double>();
             Console.Write("Enter commission for debit account: ");
-            commissions.Add(Account.AccountType.Debit, Convert.ToDouble(Console.ReadLine()));
+            commissions.Add(AccountType.Debit, Convert.ToDouble(Console.ReadLine()));
             Console.Write("Enter commission for credit account: ");
-            commissions.Add(Account.AccountType.Credit, Convert.ToDouble(Console.ReadLine()));
+            commissions.Add(AccountType.Credit, Convert.ToDouble(Console.ReadLine()));
             return commissions;
         }
 

@@ -8,8 +8,8 @@ namespace Banks
     public interface IBank
     {
         public string Name { get; }
-        public Dictionary<Account.AccountType, object> InterestedRates { get; }
-        public Dictionary<Account.AccountType, double> Commissions { get; }
+        public Dictionary<AccountType, object> InterestedRates { get; }
+        public Dictionary<AccountType, double> Commissions { get; }
         public Client AddClient(ClientInfo clientInfo);
         public void AddAccount(Client client, Account account);
         public Client FindClientByPhoneNumber(string num);

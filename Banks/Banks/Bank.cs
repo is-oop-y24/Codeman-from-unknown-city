@@ -10,7 +10,7 @@ namespace Banks.Banks
     {
         private readonly List<Client> _clients;
 
-        public Bank(string name, Dictionary<Account.AccountType, object> interestedRates, Dictionary<Account.AccountType, double> commissions)
+        public Bank(string name, Dictionary<AccountType, object> interestedRates, Dictionary<AccountType, double> commissions)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Bank name mustn't be null or empty");
@@ -21,8 +21,8 @@ namespace Banks.Banks
         }
 
         public string Name { get; }
-        public Dictionary<Account.AccountType, object> InterestedRates { get; }
-        public Dictionary<Account.AccountType, double> Commissions { get; }
+        public Dictionary<AccountType, object> InterestedRates { get; }
+        public Dictionary<AccountType, double> Commissions { get; }
 
         public Client AddClient(ClientInfo clientInfo)
         {

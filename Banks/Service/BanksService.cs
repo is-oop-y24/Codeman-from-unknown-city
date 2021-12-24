@@ -17,8 +17,8 @@ namespace Banks.Service
 
         public IBank AddBank(
             string name,
-            Dictionary<Account.AccountType, object> interestedRates,
-            Dictionary<Account.AccountType, double> commissions,
+            Dictionary<AccountType, object> interestedRates,
+            Dictionary<AccountType, double> commissions,
             out string errDesc)
         {
             errDesc = null;

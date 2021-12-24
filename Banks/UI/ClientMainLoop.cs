@@ -90,9 +90,9 @@ namespace Banks.UI
             Account account = null;
             var menu = new Menu("Choose account type", new List<Menu.Item>
             {
-                new Menu.Item("Debit", () => account = client.Accounts.Find(acc => acc.Type == Account.AccountType.Debit)),
-                new Menu.Item("Credit", () => account = client.Accounts.Find(acc => acc.Type == Account.AccountType.Credit)),
-                new Menu.Item("Deposit", () => account = client.Accounts.Find(acc => acc.Type == Account.AccountType.Deposit)),
+                new Menu.Item("Debit", () => account = client.Accounts.Find(acc => acc.Type == AccountType.Debit)),
+                new Menu.Item("Credit", () => account = client.Accounts.Find(acc => acc.Type == AccountType.Credit)),
+                new Menu.Item("Deposit", () => account = client.Accounts.Find(acc => acc.Type == AccountType.Deposit)),
             });
             menu.Render();
             return account;
@@ -105,14 +105,14 @@ namespace Banks.UI
             {
                 new Menu.Item("Debit", () =>
                 {
-                    if (_client.Accounts.Find(acc => acc.Type == Account.AccountType.Debit) != null)
+                    if (_client.Accounts.Find(acc => acc.Type == AccountType.Debit) != null)
                         Console.Error.WriteLine("Debit account already exists\n");
                     else
                         account = new Debit(_client, _bank);
                 }),
                 new Menu.Item("Credit", () =>
                 {
-                    if (_client.Accounts.Find(acc => acc.Type == Account.AccountType.Credit) != null)
+                    if (_client.Accounts.Find(acc => acc.Type == AccountType.Credit) != null)
                     {
                         Console.Error.WriteLine("Credit account already exists\n");
                         return;
@@ -139,7 +139,7 @@ namespace Banks.UI
                 }),
                 new Menu.Item("Deposit", () =>
                 {
-                    if (_client.Accounts.Find(acc => acc.Type == Account.AccountType.Deposit) != null)
+                    if (_client.Accounts.Find(acc => acc.Type == AccountType.Deposit) != null)
                     {
                         Console.Error.WriteLine("Deposit account already exists\n");
                         return;
