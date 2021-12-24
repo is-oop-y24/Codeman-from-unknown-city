@@ -33,7 +33,6 @@ namespace Banks.Banks
 
         public void AddAccount(Client client, Account account)
         {
-            account.IsDoubtful = client.Info.PassportNumber == null || client.Info.Address == null;
             WaybackMachine.Instance.NewDay += account.OnNewDay;
             client.Accounts.Add(account);
         }

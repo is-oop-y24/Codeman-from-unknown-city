@@ -7,8 +7,8 @@ namespace Banks.Accounts.Debit
     {
         private double _interest;
 
-        public Debit(Client owner, IBank bank, bool isDoubtful = true)
-            : base(owner, bank, isDoubtful)
+        public Debit(Client owner, IBank bank)
+            : base(owner, bank)
         {
             Type = AccountType.Debit;
             Balance = 0;

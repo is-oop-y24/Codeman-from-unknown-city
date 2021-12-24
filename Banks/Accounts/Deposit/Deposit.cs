@@ -11,7 +11,7 @@ namespace Banks.Accounts.Deposit
         private ulong _daysCounter;
 
         public Deposit(Client owner, IBank bank, ulong validity, bool isDoubtful = true)
-            : base(owner, bank, isDoubtful)
+            : base(owner, bank)
         {
             _interest = 0;
             _daysCounter = 0;

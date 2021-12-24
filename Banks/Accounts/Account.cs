@@ -6,15 +6,14 @@ namespace Banks.Accounts
 {
     public abstract class Account
     {
-        protected Account(Clients.Client owner, IBank bank, bool isDoubtful = true)
+        protected Account(Clients.Client owner, IBank bank)
         {
             Owner = owner ?? throw new ArgumentNullException(nameof(owner));
             Bank = bank ?? throw new ArgumentNullException(nameof(bank));
-            IsDoubtful = isDoubtful;
         }
 
         public AccountType Type { get; protected set; }
-        public bool IsDoubtful { get; set; }
+        public bool IsDoubtful { get => Owner.Info.IsDoubtful; }
         public double AllowedSendSum { get; set; }
         public Client Owner { get; }
         public double Balance { get; protected set; }

@@ -5,8 +5,8 @@ namespace Banks.Accounts
 {
     public class Credit : Account
     {
-        public Credit(Client owner, IBank bank, double limit = 0, bool isDoubtful = true)
-            : base(owner, bank, isDoubtful)
+        public Credit(Client owner, IBank bank, double limit = 0)
+            : base(owner, bank)
         {
             Type = AccountType.Credit;
             Balance = limit;
