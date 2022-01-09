@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Banks.Accounts;
+using Banks.Banks;
+using Banks.InterestedRates;
 
 namespace Banks.Service
 {
@@ -9,7 +11,7 @@ namespace Banks.Service
 
         IBank AddBank(
             string name,
-            Dictionary<AccountType, object> interestedRates,
+            Dictionary<AccountType, IInterestedRate> interestedRates,
             Dictionary<AccountType, double> commissions,
             out string errDesc);
     }

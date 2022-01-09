@@ -1,4 +1,5 @@
 using System;
+using Banks.Banks;
 using Banks.Clients;
 
 namespace Banks.Accounts.Debit
@@ -25,8 +26,7 @@ namespace Banks.Accounts.Debit
 
         public override void OnNewDay(object sender, EventArgs eventArgs)
         {
-            int interestRate = (int)Bank.InterestedRates[Type];
-            _interest += Balance / 100 * interestRate;
+            _interest += Balance / 100 * Bank.InterestedRates[Type].GetInterestedRateFor(Balance);
         }
 
         protected override bool ReceiveMoney(double sum, out string errDesc) => ChangeBalance(sum, out errDesc);

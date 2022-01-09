@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using Banks.Accounts;
 using Banks.Clients;
+using Banks.InterestedRates;
 
-namespace Banks
+namespace Banks.Banks
 {
     public interface IBank
     {
         string Name { get; }
-        Dictionary<AccountType, object> InterestedRates { get; }
+        Dictionary<AccountType, IInterestedRate> InterestedRates { get; }
         Dictionary<AccountType, double> Commissions { get; }
         Client AddClient(ClientInfo clientInfo);
         void AddAccount(Client client, Account account);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Banks.Accounts;
 using Banks.Clients;
+using Banks.InterestedRates;
 using Banks.Tools;
 
 namespace Banks.Banks
@@ -10,7 +11,7 @@ namespace Banks.Banks
     {
         private readonly List<Client> _clients;
 
-        public Bank(string name, Dictionary<AccountType, object> interestedRates, Dictionary<AccountType, double> commissions)
+        public Bank(string name, Dictionary<AccountType, IInterestedRate> interestedRates, Dictionary<AccountType, double> commissions)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Bank name mustn't be null or empty");
@@ -21,7 +22,7 @@ namespace Banks.Banks
         }
 
         public string Name { get; }
-        public Dictionary<AccountType, object> InterestedRates { get; }
+        public Dictionary<AccountType, IInterestedRate> InterestedRates { get; }
         public Dictionary<AccountType, double> Commissions { get; }
 
         public Client AddClient(ClientInfo clientInfo)

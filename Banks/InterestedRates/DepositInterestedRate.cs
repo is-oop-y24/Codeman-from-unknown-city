@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using Banks.Accounts;
 
-namespace Banks.Accounts.Deposit
+namespace Banks.InterestedRates
 {
-    public class InterestedRate
+    public class DepositInterestedRate : IInterestedRate
     {
         private readonly List<(double, double)> _interestedRatesBySum;
-        private double _interestRateForMinSum;
+        private readonly double _interestRateForMinSum;
 
-        public InterestedRate(double interestRateForMinSum)
+        public DepositInterestedRate(double interestRateForMinSum)
         {
             _interestRateForMinSum = interestRateForMinSum;
             _interestedRatesBySum = new List<(double, double)>();

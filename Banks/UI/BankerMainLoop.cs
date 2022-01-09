@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Banks.Accounts;
+using Banks.InterestedRates;
 using Banks.Service;
 
 namespace Banks.UI
@@ -26,12 +27,12 @@ namespace Banks.UI
                 menu.Render();
         }
 
-        private static Dictionary<AccountType, object> GetInterestedRates()
+        private static Dictionary<AccountType, IInterestedRate> GetInterestedRates()
         {
-            var interestedRates = new Dictionary<AccountType, object>();
+            var interestedRates = new Dictionary<AccountType, IInterestedRate>();
             Console.Write("Enter interested rate for debit account: ");
-            interestedRates.Add(AccountType.Debit, Convert.ToDouble(Console.ReadLine()));
-            var debitInterestedRates = new List<(double, double)>();
+            interestedRates.Add(AccountType.Debit, new DebitInterestedRate(Convert.ToDouble(Console.ReadLine())));
+            var depositInterestedRates = new DepositInterestedRate(0);
             Console.WriteLine("Enter interested rate for deposit account:");
             do
             {
@@ -39,11 +40,12 @@ namespace Banks.UI
                 double sum = Convert.ToDouble(Console.ReadLine());
                 Console.Write("Then interested rate will be = ");
                 double interestedRate = Convert.ToDouble(Console.ReadLine());
-                debitInterestedRates.Add((sum, interestedRate));
+                if (!depositInterestedRates.Add(sum, interestedRate, out string errDesc))
+                    Console.Error.WriteLine(errDesc);
                 Console.Write("Do you want to continue? [Y/n] ");
             }
             while (Console.ReadLine() != "n");
-            interestedRates.Add(AccountType.Deposit, debitInterestedRates);
+            interestedRates.Add(AccountType.Deposit, depositInterestedRates);
             return interestedRates;
         }
 

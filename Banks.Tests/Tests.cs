@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using Banks.Accounts;
 using Banks.Accounts.Debit;
 using Banks.Accounts.Deposit;
+using Banks.Banks;
 using Banks.Clients;
+using Banks.InterestedRates;
 using Banks.Service;
 using Banks.Tools;
 using Banks.Transactions;
@@ -18,15 +20,16 @@ namespace Banks.Tests
         private IBanksService _banksService;
         private IBank _bank;
 
-        private static Dictionary<AccountType, object> InstallInterestedRates()
+        private static Dictionary<AccountType, IInterestedRate> InstallInterestedRates()
         {
-            var depositInterestedRate = new InterestedRate(3);
+            var depositInterestedRate = new DepositInterestedRate(3);
             depositInterestedRate.Add(50000, 3.5, out string _);
             depositInterestedRate.Add(100000, 4, out string _);
-            return new Dictionary<AccountType, object>
+            return new Dictionary<AccountType, IInterestedRate>
             {
-                [AccountType.Debit] = 4,
-                [AccountType.Deposit] = depositInterestedRate
+                [AccountType.Debit] = new DebitInterestedRate(4),
+                [AccountType.Deposit] = depositInterestedRate,
+                [AccountType.Credit] = new CreditInterestedRate()
             };
         }
 

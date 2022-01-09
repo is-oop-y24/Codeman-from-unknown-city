@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Banks.Banks;
 using Banks.Clients;
+using Banks.InterestedRates;
 
 namespace Banks.Accounts.Deposit
 {
@@ -31,9 +33,7 @@ namespace Banks.Accounts.Deposit
 
         public override void OnNewDay(object sender, EventArgs eventArgs)
         {
-            var interestRates = (InterestedRate)Bank.InterestedRates[Type];
-
-            _interest += Balance / 100 * (interestRates.GetInterestedRateFor(Balance) / 365);
+            _interest += Balance / 100 * (Bank.InterestedRates[Type].GetInterestedRateFor(Balance) / 365);
             _daysCounter++;
         }
 
