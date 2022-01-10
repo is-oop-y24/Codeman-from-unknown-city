@@ -5,7 +5,7 @@ namespace Isu.Entities
 {
     public class GroupName
     {
-        private static readonly List<string> PossiblePrefixes = new List<string> { "M3", };
+        private static readonly List<string> PossiblePrefixes = new List<string> { "M3", "B3", "K3", "F3", "T3" };
         private readonly string _stringRepresentation;
         private CourseNumber _course;
 
